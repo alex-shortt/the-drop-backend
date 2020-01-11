@@ -5,6 +5,7 @@
  * @param {!express:Response} res HTTP response context.
  */
 
+const Masterpassword = 'temporary';
 var firebase = require("firebase");
 
 firebase.initializeApp({
@@ -16,30 +17,62 @@ firebase.initializeApp({
 
 const db = firebase.firestore();
 
-async function getDrop(id) {
-  const doc = await db
-    .collection("drops")
-    .doc(id)
-    .get();
+async function createDrop(code, location, name, notifyDate, prize, startDate, status, winnerId, password) {
 
-  if (!doc.exists) {
-    return null;
+  if (password == Masterpassword){
+    if (code == ""){
+      code = Math.floor(Math.random()) * 100000000;
+    }
+    console.log(code)
+    const docRef = await db
+          .collection('drops')
+          .add({
+            code: code,
+            location: location,
+            name: name,
+            notifyDate: notifyDate,
+            prize: prize,
+            startDate: startDate,
+            status: status,
+            winnerId: winnerId,
+          }).then(ref => {
+            console.log('Added drop with ID: ', ref.id);
+          });
+          return 1;
   }
-
-  return doc.data();
+  else{
+    console.log('Incorrect password')
+    return 0;
+  }
 }
 
 // change to exports.signupUser before deploying
-const signupUser = async (req, res) => {
-  const { venmo, phone } = req.body;
-  console.log(venmo)
-  console.log(phone)
-  let drop = await getDrop("trRhr7AX26Ll5YOYRI6e");
-  console.log(drop);
-  // res.status(200).send(drop);
+const addDrop = async (req, res) => {
+  const { code, location, name, notifyDate, prize, startDate, status, winnerId, password } = req.body;
+  console.log(code)
+  console.log(location)
+  console.log(name)
+  console.log(notifyDate)
+  console.log(prize)
+  console.log(startDate)
+  console.log(status)
+  console.log(winnerId)
+  let dropSuccess = await createDrop(code, location, name, notifyDate, prize, startDate, status, winnerId, password);
+  if (dropSuccess == 1)
+    res.status(200);
+  else
+    res.status(403);
 };
 
-signupUser({ body: { venmo: "alex-shortt", phone: 4086803231 } });
+addDrop({ body: { code: "",
+  location: "",
+  name: "name",
+  notifyDate: "",
+  prize: "",
+  startDate: "",
+  status: "",
+  winnerId: "",
+  password: "", } });
 
 
 /*
