@@ -16,35 +16,29 @@ firebase.initializeApp({
 
 const db = firebase.firestore();
 
-async function getDrop(id) {
-  const doc = await db
-    .collection("drops")
-    .doc(id)
-    .get();
+async function createUser(res, props) {
+  const { phone, venmo } = props;
 
-  if (!doc.exists) {
-    return null;
-  }
-
-  return doc.data();
+  const docRef = await db.collection("users").add({
+    phone: phone,
+    venmo: venmo
+  });
+  console.log("Added doc with id", docRef.id);
+  return res.status(200).send({ success: true });
 }
 
 // change to exports.signupUser before deploying
-const signupUser = async (req, res) => {
-  const { venmo, phone } = req.body;
-  console.log(venmo)
-  console.log(phone)
-  let drop = await getDrop("trRhr7AX26Ll5YOYRI6e");
-  console.log(drop);
-  // res.status(200).send(drop);
+//const signupUser = async (req, res) => {
+  exports.signupUser = async (req, res) => {
+
+  res.header("Content-Type", "application/json");
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+
+  //respond to CORS preflight requests
+  if (req.method == "OPTIONS") {
+    res.status(204).send("");
+  }
+
+  return await createDrop(res, JSON.parse(req.body));
 };
-
-signupUser({ body: { venmo: "alex-shortt", phone: 4086803231 } });
-
-
-/*
-  exports.signupUser = (req, res) => {
-    let message = req.query.message || req.body.message || 'Hello World Man!';
-    res.status(200).send(message);
-  };`
-*/
