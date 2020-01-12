@@ -19,7 +19,8 @@ const db = firebase.firestore();
 async function createDrop(props) {
   const { location, name, notifyDate, prize, startDate, password } = props;
 
-  const code = props.code === "" ? Math.floor(Math.random()) * 100000000 : code;
+  const code =
+    props.code === "" ? Math.floor(Math.random()) * 100000000 : props.code;
 
   if (password !== MASTERPASS) {
     console.log("Incorrect password");
@@ -31,9 +32,9 @@ async function createDrop(props) {
     location: new firebase.firestore.GeoPoint(location.lat, location.lng),
     name: name,
     notifyDate: notifyDate,
-    prize: prize,
-    startDate: startDate,
-    status: 0
+    prize: parseInt(prize),
+    startDate: new Date(startDate),
+    status: "pending"
   });
   console.log("Added doc with id", docRef.id);
   return 1;
