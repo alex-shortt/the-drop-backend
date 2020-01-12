@@ -20,7 +20,7 @@ async function createDrop(res, props) {
   const { location, name, notifyDate, prize, startDate, password } = props;
 
   const code =
-    props.code === "" ? Math.floor(Math.random()) * 100000000 : props.code;
+    props.code === "" ? Math.floor(Math.random() * 100000000).toString() : props.code;
 
   if (password !== MASTERPASS) {
     return res.status(400).send({ error: true, message: "Incorrect Password" });
