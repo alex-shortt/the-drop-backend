@@ -38,7 +38,7 @@ async function verifyTheCode(res, props) {
 
   var docRef = db.collection("drops").doc(drop.id);
   docRef.update({
-    state: "completed",
+    status: "completed",
     winner: venmo
   })
 
