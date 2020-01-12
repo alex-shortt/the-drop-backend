@@ -40,5 +40,5 @@ async function createUser(res, props) {
     res.status(204).send("");
   }
 
-  return await createDrop(res, JSON.parse(req.body));
+  return await createUser(res, JSON.parse(req.body));
 };
