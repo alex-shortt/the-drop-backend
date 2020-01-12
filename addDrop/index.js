@@ -16,14 +16,14 @@ firebase.initializeApp({
 
 const db = firebase.firestore();
 
-async function createDrop(props) {
+async function createDrop(res, props) {
   const { location, name, notifyDate, prize, startDate, password } = props;
 
   const code =
     props.code === "" ? Math.floor(Math.random()) * 100000000 : props.code;
 
   if (password !== MASTERPASS) {
-    console.log("Incorrect password");
+    return res.status(400).send({ error: true, message: "Incorrect Password" });
     return 0;
   }
 
@@ -37,7 +37,7 @@ async function createDrop(props) {
     status: "pending"
   });
   console.log("Added doc with id", docRef.id);
-  return 1;
+  return res.status(200).send({ success: true });
 }
 
 // change to exports.signupUser before deploying
@@ -51,16 +51,5 @@ exports.addDrop = async (req, res) => {
     res.status(204).send("");
   }
 
-  let dropSuccess = 0;
-  try {
-    dropSuccess = await createDrop(JSON.parse(req.body));
-  } catch (e) {
-    return res.status(500).send("Internal Error");
-  }
-
-  if (dropSuccess == 1) {
-    return res.status(200).send("Success");
-  }
-
-  return res.status(403).send("Error");
+  return await createDrop(res, JSON.parse(req.body));
 };
